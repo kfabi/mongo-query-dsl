@@ -1,21 +1,26 @@
 plugins {
-    kotlin("jvm") version "2.1.10"
+  kotlin("jvm") version "2.1.10"
+  kotlin("plugin.power-assert") version "2.1.10"
+  id("com.diffplug.spotless") version "7.0.2"
 }
 
-group = "kluempers.fabian"
-version = "1.0-SNAPSHOT"
+group = "de.kfabi"
 
-repositories {
-    mavenCentral()
-}
+version = "1.0.0-SNAPSHOT"
+
+repositories { mavenCentral() }
 
 dependencies {
-    testImplementation(kotlin("test"))
+  implementation("org.mongodb:mongodb-driver-core:5.3.1")
+  testImplementation(kotlin("test"))
 }
 
-tasks.test {
-    useJUnitPlatform()
+spotless {
+  kotlin { ktfmt().googleStyle() }
+
+  kotlinGradle { ktfmt().googleStyle() }
 }
-kotlin {
-    jvmToolchain(21)
-}
+
+tasks.test { useJUnitPlatform() }
+
+kotlin { jvmToolchain(21) }
