@@ -48,15 +48,16 @@ class MongoFieldQueryScope<T> {
     fun <T> MongoFieldQueryScope<T>.isNotIn(items: Iterable<T>) = addQuery("\$nin", items)
 
     @MongoQueryDsl
-    fun <T> MongoFieldQueryScope<List<T>>.elemMatch(query: MongoFieldQueryScope<T>.() -> Unit) =
-      addQuery("\$elemMatch") { encodeValue(MongoFieldQueryScope<T>().apply(query).asBson()) }
+    fun <I : Iterable<T>, T> MongoFieldQueryScope<I>.elemMatch(
+      query: MongoFieldQueryScope<T>.() -> Unit
+    ) = addQuery("\$elemMatch") { encodeValue(MongoFieldQueryScope<T>().apply(query).asBson()) }
 
     @MongoQueryDsl
-    fun <T> MongoFieldQueryScope<List<T>>.all(items: Iterable<T>) =
+    fun <I : Iterable<T>, T> MongoFieldQueryScope<I>.all(items: Iterable<T>) =
       addQuery("\$all") { encodeArray(items) }
 
     @MongoQueryDsl
-    fun <T> MongoFieldQueryScope<List<T>>.size(size: Int) =
+    fun <I : Iterable<T>, T> MongoFieldQueryScope<I>.size(size: Int) =
       addQuery("\$size") { writer.writeInt32(size) }
   }
 }

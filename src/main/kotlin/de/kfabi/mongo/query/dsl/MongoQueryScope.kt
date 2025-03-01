@@ -17,6 +17,10 @@ interface MongoQueryScope<T> : MongoFieldScope<T> {
   @MongoQueryDsl infix fun <R> MongoField<R>.query(query: MongoFieldQueryScope<R>.() -> Unit)
 
   @MongoQueryDsl infix fun <R> MongoField<R>.matches(item: R)
+
+  @MongoQueryDsl
+  infix fun <I : Iterable<R>, R> MongoField<I>.anyMatches(item: R) =
+    MongoField<R>(value).matches(item)
 }
 
 internal class DefaultMongoQueryScope<T> : MongoQueryScope<T> {
