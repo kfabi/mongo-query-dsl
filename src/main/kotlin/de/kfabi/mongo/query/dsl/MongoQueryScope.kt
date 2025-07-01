@@ -1,54 +1,51 @@
 package de.kfabi.mongo.query.dsl
 
+import com.mongodb.client.model.Filters
 import org.bson.conversions.Bson
 
 @MongoQueryDsl
-interface MongoQueryScope<T> : MongoFieldScope<T> {
-  interface QueryCombiner<T> {
-    operator fun get(vararg queries: MongoQueryScope<T>.() -> Unit)
+sealed class MongoQueryScope<T> : MongoFieldScope<T>() {
+  protected val filters: MutableList<Bson> = mutableListOf()
+
+  protected fun add(bson: Bson) {
+    filters.add(bson)
   }
-
-  @MongoQueryDsl val and: QueryCombiner<T>
-
-  @MongoQueryDsl val or: QueryCombiner<T>
-
-  @MongoQueryDsl val nor: QueryCombiner<T>
-
-  @MongoQueryDsl infix fun <R> MongoField<R>.query(query: MongoFieldQueryScope<R>.() -> Unit)
-
-  @MongoQueryDsl infix fun <R> MongoField<R>.matches(item: R)
 
   @MongoQueryDsl
-  infix fun <I : Iterable<R>, R> MongoField<I>.anyMatches(item: R) =
-    MongoField<R>(value).matches(item)
-}
+  class And<T> internal constructor() : MongoQueryScope<T>() {
 
-internal class DefaultMongoQueryScope<T> : MongoQueryScope<T> {
-  private val queries: MutableList<EncodableQuery> = mutableListOf()
-
-  private inner class QueryCombiner(private val field: String) : MongoQueryScope.QueryCombiner<T> {
-    override fun get(vararg queries: MongoQueryScope<T>.() -> Unit) {
-      this@DefaultMongoQueryScope.queries.add(
-        EncodableQuery(field) {
-          encodeArray(queries.map { query -> DefaultMongoQueryScope<T>().apply(query).asBson() })
-        }
-      )
+    @MongoQueryDsl
+    fun or(query: Or<T>.() -> Unit) {
+      add(Or<T>().apply(query).toBson())
     }
+
+    internal fun toBson() = Filters.and(filters)
   }
 
-  override val and: MongoQueryScope.QueryCombiner<T> = QueryCombiner("\$and")
-  override val or: MongoQueryScope.QueryCombiner<T> = QueryCombiner("\$or")
-  override val nor: MongoQueryScope.QueryCombiner<T> = QueryCombiner("\$nor")
+  @MongoQueryDsl
+  class Or<T> internal constructor() : MongoQueryScope<T>() {
 
-  override infix fun <R> MongoField<R>.query(query: MongoFieldQueryScope<R>.() -> Unit) {
-    queries.add(
-      EncodableQuery(value) { encodeValue(MongoFieldQueryScope<R>().apply(query).asBson()) }
-    )
+    @MongoQueryDsl
+    fun and(query: And<T>.() -> Unit) {
+      add(And<T>().apply(query).toBson())
+    }
+
+    internal fun toBson() = Filters.or(filters)
   }
 
-  override infix fun <R> MongoField<R>.matches(item: R) {
-    queries.add(EncodableQuery(value) { encodeValue(item) })
-  }
+  @MongoQueryDsl fun <R> MongoPath<R>.eq(item: R) = add(Filters.eq(value, item))
 
-  internal fun asBson(): Bson = QueryBson(queries.toList())
+  @MongoQueryDsl fun <R> MongoPath<R>.gt(item: R & Any) = add(Filters.gt(value, item))
+
+  @MongoQueryDsl fun <R> MongoPath<R>.gte(item: R & Any) = add(Filters.gte(value, item))
+
+  @MongoQueryDsl fun <R> MongoPath<R>.isIn(items: Iterable<R>) = add(Filters.`in`(value, items))
+
+  @MongoQueryDsl fun <R> MongoPath<R>.isNotIn(items: Iterable<R>) = add(Filters.nin(value, items))
+
+  @MongoQueryDsl fun <R> MongoPath<R>.lt(item: R & Any) = add(Filters.lt(value, item))
+
+  @MongoQueryDsl fun <R> MongoPath<R>.lte(item: R & Any) = add(Filters.lte(value, item))
+
+  @MongoQueryDsl fun <R> MongoPath<R>.ne(item: R) = add(Filters.ne(value, item))
 }
