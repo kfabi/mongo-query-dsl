@@ -41,7 +41,7 @@ val filterWithUnexpectedType = Filters.eq("${Peron::contacts.name}.${Contact::fa
 ````
 
 To prevent these errors the DSL introduces type safety to the queries.
-There are three important concepts for that.
+There are two important concepts for that.
 
 * MongoPaths: Describe tha path to a field (or multiple) in a document including their type.
 * Operators: Can be applied to the MongoPath to describe what to filter/update.
