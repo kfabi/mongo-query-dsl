@@ -1,0 +1,14 @@
+[versions]
+kotlin = "2.1.20"
+spotless = "7.0.2"
+mongodb = "5.5.1"
+
+[libraries]
+mongodb-driver-bom = { module = "org.mongodb:mongodb-driver-bom", version.ref = "mongodb" }
+mongodb-driver-core = { module =  "org.mongodb:mongodb-driver-core", version.ref = "mongodb" }
+mongodb-driver-kotlin-coroutine = { module =  "org.mongodb:mongodb-driver-kotlin-coroutine", version.ref = "mongodb" }
+
+[plugins]
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+power-assert = { id = "org.jetbrains.kotlin.plugin.power-assert", version.ref = "kotlin"}
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

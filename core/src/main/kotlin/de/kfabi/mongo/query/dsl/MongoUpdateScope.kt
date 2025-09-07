@@ -6,36 +6,36 @@ import org.bson.BsonTimestamp
 import org.bson.conversions.Bson
 
 @MongoQueryDsl
-class MongoUpdateScope<T> : MongoFieldScope<T>() {
+class MongoUpdateScope<T> : MongoPathScope<T>() {
   private val updates: MutableList<Bson> = mutableListOf()
 
   @MongoQueryDsl
-  fun <R : Number> MongoPath<R>.inc(by: R) {
+  infix fun <R : Number> MongoPath<R>.inc(by: R) {
     updates += Updates.inc(value, by)
   }
 
   @MongoQueryDsl
-  fun <R : Number> MongoPath<R>.mul(by: R) {
+  infix fun <R : Number> MongoPath<R>.mul(by: R) {
     updates += Updates.mul(value, by)
   }
 
   @MongoQueryDsl
-  fun <R> MongoPath<R>.set(item: R) {
+  infix fun <R> MongoPath<R>.set(item: R) {
     updates += Updates.set(value, item)
   }
 
   @MongoQueryDsl
-  fun <R> MongoPath<R>.setOnInsert(item: R) {
+  infix fun <R> MongoPath<R>.setOnInsert(item: R) {
     updates += Updates.setOnInsert(value, item)
   }
 
   @MongoQueryDsl
-  fun <R> MongoPath<R>.max(item: R & Any) {
+  infix fun <R> MongoPath<R>.max(item: R & Any) {
     updates += Updates.max(value, item)
   }
 
   @MongoQueryDsl
-  fun <R> MongoPath<R>.min(item: R & Any) {
+  infix  fun <R> MongoPath<R>.min(item: R & Any) {
     updates += Updates.min(value, item)
   }
 
@@ -60,17 +60,17 @@ class MongoUpdateScope<T> : MongoFieldScope<T>() {
   }
 
   @MongoQueryDsl
-  fun <I : Iterable<R>, R> MongoPath<I>.addEachToSet(items: Iterable<R>) {
+  infix fun <I : Iterable<R>, R> MongoPath<I>.addEachToSet(items: Iterable<R>) {
     updates += Updates.addEachToSet(value, items.toList())
   }
 
   @MongoQueryDsl
-  fun <I : Iterable<R>, R> MongoPath<I>.push(item: R) {
+  infix fun <I : Iterable<R>, R> MongoPath<I>.push(item: R) {
     updates += Updates.push(value, item)
   }
 
   @MongoQueryDsl
-  fun <I : Iterable<R>, R> MongoPath<I>.pushEach(items: Iterable<R>) {
+  infix fun <I : Iterable<R>, R> MongoPath<I>.pushEach(items: Iterable<R>) {
     updates += Updates.pushEach(value, items.toList())
   }
 
@@ -85,12 +85,12 @@ class MongoUpdateScope<T> : MongoFieldScope<T>() {
   }
 
   @MongoQueryDsl
-  fun <I : Iterable<R>, R> MongoPath<I>.pull(item: R) {
+  infix fun <I : Iterable<R>, R> MongoPath<I>.pull(item: R) {
     updates += Updates.pull(value, item)
   }
 
   @MongoQueryDsl
-  fun <I : Iterable<R>, R> MongoPath<I>.pullAll(items: Iterable<R>) {
+  infix fun <I : Iterable<R>, R> MongoPath<I>.pullAll(items: Iterable<R>) {
     updates += Updates.pullAll(value, items.toList())
   }
 
